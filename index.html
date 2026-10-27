@@ -121,11 +121,25 @@
                     <button onclick="loadRiwayat()" class="btn-outline">🔄 Refresh Data</button>
                 </div>
 
-                <!-- Toolbar Pencarian -->
+                <!-- Toolbar Pencarian & Filter -->
                 <div class="toolbar-riwayat">
-                    <input type="text" id="search-riwayat" placeholder="🔍 Cari nama peserta atau NIK..." onkeyup="filterRiwayat()">
-                </div>
+                    <div class="filter-group">
+                        <input type="text" id="search-riwayat" placeholder="🔍 Cari nama peserta atau NIK..." onkeyup="applyFilters()">
+                        
+                        <select id="filter-provinsi" onchange="updateKabupatenDropdown(); applyFilters()">
+                            <option value="">Semua Provinsi</option>
+                        </select>
+                        
+                        <select id="filter-kabupaten" onchange="applyFilters()">
+                            <option value="">Semua Kab/Kota</option>
+                        </select>
 
+                        <select id="filter-operator" onchange="applyFilters()">
+                            <option value="">Semua Operator</option>
+                        </select>
+                    </div>
+                    <button onclick="loadRiwayat()" class="btn-outline">🔄 Refresh</button>
+                </div>
                 <div class="card">
                     <div class="card-body table-responsive">
                         <table id="riwayat-table">
