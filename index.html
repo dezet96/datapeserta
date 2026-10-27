@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Pendataan Peserta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HALAMAN LOGIN -->
+    <div id="login-page" class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon">📋</div>
+                <h2>Portal Operator</h2>
+                <p>Silakan masuk untuk menginput data peserta</p>
+            </div>
+            <div class="login-form">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Masukkan username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Masukkan password">
+                </div>
+                <button onclick="login()" class="btn-primary full-width">Masuk ke Sistem</button>
+                <p id="login-error" class="error-msg"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN DASHBOARD -->
+    <div id="form-page" class="dashboard-wrapper hidden">
+        <header class="topbar">
+            <div class="brand">
+                <span class="logo-icon-small">📋</span> Sistem Pendataan
+            </div>
+            <div class="user-info">
+                <span>Halo, <strong id="display-operator"></strong></span>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Menu Tabs -->
+            <div class="tabs">
+                <button id="tab-input" class="tab-btn active" onclick="switchTab('input')">➕ Input Peserta Baru</button>
+                <button id="tab-riwayat" class="tab-btn" onclick="switchTab('riwayat')">📑 Riwayat Inputan</button>
+            </div>
+
+            <!-- KONTEN: FORM INPUT -->
+            <div id="content-input" class="tab-content">
+                <div class="page-header">
+                    <h1>Formulir Pendataan Peserta</h1>
+                    <p>Isi data instansi dan data peserta dengan lengkap.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Informasi Instansi</h3>
+                    </div>
+                    <div class="card-body grid-3">
+                        <div class="input-group">
+                            <label>Provinsi</label>
+                            <input type="text" id="provinsi" placeholder="Contoh: Jawa Barat" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Kabupaten / Kota</label>
+                            <input type="text" id="kabKota" placeholder="Contoh: Kota Bandung" required>
+                        </div>
+                        <div class="input-group">
+                            <label>PIC & Telp/WA</label>
+                            <input type="text" id="pic" placeholder="Nama PIC / 0812xxxx" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Data Peserta</h3>
+                    </div>
+                    <div class="card-body grid-2">
+                        <div class="input-group">
+                            <label>Nama Lengkap Peserta</label>
+                            <input type="text" id="input-nama" placeholder="Sesuai KTP" required>
+                        </div>
+                        <div class="input-group">
+                            <label>NIK Peserta (16 Digit)</label>
+                            <input type="number" id="input-nik" placeholder="Contoh: 3273..." required>
+                        </div>
+                        <div class="input-group">
+                            <label>No. Telp / WA Peserta</label>
+                            <input type="text" id="input-telp" placeholder="Contoh: 081234..." required>
+                        </div>
+                        <div class="input-group">
+                            <label>Alamat Lengkap Peserta</label>
+                            <input type="text" id="input-alamat" placeholder="Jalan, RT/RW, Kel/Desa" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-footer">
+                    <div id="submit-status" class="status-msg"></div>
+                    <button type="button" class="btn-primary btn-large" onclick="submitSingleData()">
+                        💾 Simpan Data Peserta
+                    </button>
+                </div>
+            </div>
+
+            <!-- KONTEN: RIWAYAT -->
+            <div id="content-riwayat" class="tab-content hidden">
+                <div class="page-header flex-between">
+                    <div>
+                        <h1>Riwayat Pendataan</h1>
+                        <p>Daftar peserta yang sudah berhasil diinput ke dalam sistem.</p>
+                    </div>
+                    <button onclick="loadRiwayat()" class="btn-outline">🔄 Refresh Data</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body table-responsive">
+                        <table id="riwayat-table">
+                            <thead>
+                                <tr>
+                                    <th>WAKTU INPUT</th>
+                                    <th>OPERATOR</th>
+                                    <th>NAMA PESERTA</th>
+                                    <th>NIK</th>
+                                    <th>TELP/WA</th>
+                                    <th>INSTANSI (Prov/Kab)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayat-body">
+                                <tr><td colspan="6" class="text-center text-muted">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxH-cCijDGzyz_bDnXV-11V3DvgwSkv6pKDpDnimongGjcIxCI1mugyrHYl1LFLRzrcHw/exec";
+
+        const operators = { "operator1": "pass123", "operator2": "pass456" };
+
+        if(sessionStorage.getItem("operator")) { showForm(); }
+
+        function login() {
+            const user = document.getElementById("username").value;
+            const pass = document.getElementById("password").value;
+            if(operators[user] && operators[user] === pass) {
+                sessionStorage.setItem("operator", user);
+                showForm();
+            } else {
+                document.getElementById("login-error").innerText = "Username atau Password salah!";
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem("operator");
+            location.reload();
+        }
+
+        function showForm() {
+            document.getElementById("login-page").classList.add("hidden");
+            document.getElementById("form-page").classList.remove("hidden");
+            document.getElementById("display-operator").innerText = sessionStorage.getItem("operator");
+        }
+
+        // Navigasi Tab
+        function switchTab(tab) {
+            document.getElementById("content-input").classList.add("hidden");
+            document.getElementById("content-riwayat").classList.add("hidden");
+            document.getElementById("tab-input").classList.remove("active");
+            document.getElementById("tab-riwayat").classList.remove("active");
+
+            if(tab === 'input') {
+                document.getElementById("content-input").classList.remove("hidden");
+                document.getElementById("tab-input").classList.add("active");
+            } else {
+                document.getElementById("content-riwayat").classList.remove("hidden");
+                document.getElementById("tab-riwayat").classList.add("active");
+                loadRiwayat(); // Panggil data saat tab riwayat dibuka
+            }
+        }
+
+        // Fungsi Simpan 1 Data
+        async function submitSingleData() {
+            const provinsi = document.getElementById("provinsi").value;
+            const kabKota = document.getElementById("kabKota").value;
+            const pic = document.getElementById("pic").value;
+            const nama = document.getElementById("input-nama").value;
+            const nik = document.getElementById("input-nik").value;
+            const telp = document.getElementById("input-telp").value;
+            const alamat = document.getElementById("input-alamat").value;
+            
+            const statusText = document.getElementById("submit-status");
+
+            if(!provinsi || !kabKota || !pic || !nama || !nik) {
+                alert("Mohon lengkapi data Instansi dan Data Peserta (Nama & NIK wajib)!");
+                return;
+            }
+
+            statusText.innerHTML = "⏳ Sedang menyimpan...";
+            statusText.className = "status-msg text-blue";
+
+            const data = {
+                namaOperator: sessionStorage.getItem("operator"),
+                provinsi, kabKota, pic,
+                namaPeserta: nama,
+                nik, telpPeserta: telp, alamat
+            };
+
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    statusText.innerHTML = `✅ Sukses! Data <b>${nama}</b> berhasil disimpan.`;
+                    statusText.className = "status-msg text-green";
+                    // Kosongkan form peserta untuk input berikutnya
+                    document.getElementById("input-nama").value = "";
+                    document.getElementById("input-nik").value = "";
+                    document.getElementById("input-telp").value = "";
+                    document.getElementById("input-alamat").value = "";
+                } else {
+                    statusText.innerHTML = `❌ Gagal: ${result.message}`;
+                    statusText.className = "status-msg text-red";
+                }
+            } catch (e) {
+                statusText.innerHTML = `❌ Gagal koneksi ke server.`;
+                statusText.className = "status-msg text-red";
+            }
+        }
+
+        // Fungsi Load Riwayat
+        async function loadRiwayat() {
+            const tbody = document.getElementById("riwayat-body");
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Memuat data...</td></tr>`;
+
+            try {
+                // Karena menggunakan doGet, kita fetch tanpa method POST
+                const response = await fetch(API_URL); 
+                const result = await response.json();
+
+                if(result.status === "success") {
+                    if(result.data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Belum ada data yang diinput.</td></tr>`;
+                        return;
+                    }
+
+                    let html = "";
+                    result.data.forEach(row => {
+                        html += `
+                            <tr>
+                                <td><span class="badge-time">${row.timestamp}</span></td>
+                                <td><strong>${row.operator}</strong></td>
+                                <td>${row.nama}</td>
+                                <td>${row.nik}</td>
+                                <td>${row.telp || '-'}</td>
+                                <td>${row.provinsi} / ${row.kabKota}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red">Gagal memuat: ${result.message}</td></tr>`;
+                }
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red">Gagal koneksi ke server.</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>

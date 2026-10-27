@@ -1,0 +1,426 @@
+:root {
+    --primary-color: #2563eb;       /* Biru profesional */
+    --primary-hover: #1d4ed8;
+    --bg-color: #f3f4f6;            /* Abu-abu sangat terang */
+    --card-bg: #ffffff;
+    --text-main: #1f2937;           /* Abu-abu gelap */
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+    --danger-color: #ef4444;
+    --success-color: #10b981;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+
+/* =========================================
+   HALAMAN LOGIN
+   ========================================= */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+}
+
+.login-card {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    padding: 40px 30px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.login-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* =========================================
+   HALAMAN DASHBOARD / FORM
+   ========================================= */
+.topbar {
+    background: var(--card-bg);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+}
+
+.main-content {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.page-header p {
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+/* Card Styling */
+.card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-bottom: 25px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: #f9fafb;
+}
+
+.card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Forms & Inputs */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* Table Styling */
+.table-responsive {
+    overflow-x: auto;
+    padding: 0; /* Override card-body padding for table */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+th {
+    background-color: #f9fafb;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+td {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.table-input {
+    border: 1px solid transparent !important;
+    background: transparent;
+    padding: 8px !important;
+    border-radius: 4px;
+}
+
+.table-input:hover {
+    background: #f9fafb;
+    border-color: var(--border-color) !important;
+}
+
+.table-input:focus {
+    background: #fff;
+}
+
+.text-center { text-align: center; }
+.font-bold { font-weight: 600; color: var(--text-muted); }
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover { background-color: var(--primary-hover); }
+
+.full-width { width: 100%; margin-top: 10px; }
+
+.btn-large {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover { background: #eff6ff; }
+
+.btn-logout {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.btn-logout:hover { background: #fecaca; }
+
+.btn-delete {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: color 0.2s;
+}
+
+.btn-delete:hover {
+    color: var(--danger-color);
+    background: #fee2e2;
+}
+
+/* Footer Action */
+.action-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.status-msg {
+    font-size: 14px;
+    line-height: 1.6;
+    flex: 1;
+    margin-right: 20px;
+}
+
+.error-list {
+    margin-top: 8px;
+    margin-left: 20px;
+    color: var(--danger-color);
+}
+
+.text-red { color: var(--danger-color); }
+.text-green { color: var(--success-color); }
+.text-blue { color: var(--primary-color); }
+
+.error-msg {
+    color: var(--danger-color);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .topbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .action-footer {
+        flex-direction: column-reverse;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .btn-large {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   TABS NAVIGATION & RIWAYAT STYLES
+   ========================================= */
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background: #e5e7eb;
+    color: var(--text-main);
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Grid untuk Data Peserta (2 kolom) */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Badge Waktu di Riwayat */
+.badge-time {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+    .tabs {
+        flex-direction: column;
+    }
+}
