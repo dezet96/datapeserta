@@ -164,6 +164,12 @@
 
         const operators = { "operator1": "pass123", "operator2": "pass456" };
 
+        // State untuk Pagination & Riwayat
+        let allRiwayatData = []; // Menyimpan semua data dari server
+        let filteredData = [];   // Menyimpan data setelah difilter (search)
+        let currentPage = 1;
+        const rowsPerPage = 10;  // Tampilkan 10 data per halaman
+
         if(sessionStorage.getItem("operator")) { showForm(); }
 
         function login() {
@@ -188,7 +194,6 @@
             document.getElementById("display-operator").innerText = sessionStorage.getItem("operator");
         }
 
-        // Navigasi Tab
         function switchTab(tab) {
             document.getElementById("content-input").classList.add("hidden");
             document.getElementById("content-riwayat").classList.add("hidden");
@@ -201,12 +206,12 @@
             } else {
                 document.getElementById("content-riwayat").classList.remove("hidden");
                 document.getElementById("tab-riwayat").classList.add("active");
-                loadRiwayat(); // Panggil data saat tab riwayat dibuka
+                loadRiwayat();
             }
         }
 
-        // Fungsi Simpan 1 Data
         async function submitSingleData() {
+            // ... (KODE SUBMIT SINGLE DATA TETAP SAMA SEPERTI SEBELUMNYA) ...
             const provinsi = document.getElementById("provinsi").value;
             const kabKota = document.getElementById("kabKota").value;
             const pic = document.getElementById("pic").value;
@@ -214,7 +219,6 @@
             const nik = document.getElementById("input-nik").value;
             const telp = document.getElementById("input-telp").value;
             const alamat = document.getElementById("input-alamat").value;
-            
             const statusText = document.getElementById("submit-status");
 
             if(!provinsi || !kabKota || !pic || !nama || !nik) {
@@ -227,9 +231,7 @@
 
             const data = {
                 namaOperator: sessionStorage.getItem("operator"),
-                provinsi, kabKota, pic,
-                namaPeserta: nama,
-                nik, telpPeserta: telp, alamat
+                provinsi, kabKota, pic, namaPeserta: nama, nik, telpPeserta: telp, alamat
             };
 
             try {
@@ -239,7 +241,6 @@
                 if(result.status === "success") {
                     statusText.innerHTML = `✅ Sukses! Data <b>${nama}</b> berhasil disimpan.`;
                     statusText.className = "status-msg text-green";
-                    // Kosongkan form peserta untuk input berikutnya
                     document.getElementById("input-nama").value = "";
                     document.getElementById("input-nik").value = "";
                     document.getElementById("input-telp").value = "";
@@ -254,42 +255,118 @@
             }
         }
 
-        // Fungsi Load Riwayat
+        // ==========================================
+        // LOGIKA RIWAYAT, SEARCH, & PAGINATION
+        // ==========================================
+
         async function loadRiwayat() {
             const tbody = document.getElementById("riwayat-body");
             tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Memuat data...</td></tr>`;
+            
+            // Reset pencarian saat data di-refresh
+            document.getElementById("search-riwayat").value = ""; 
 
             try {
-                // Karena menggunakan doGet, kita fetch tanpa method POST
                 const response = await fetch(API_URL); 
                 const result = await response.json();
 
                 if(result.status === "success") {
-                    if(result.data.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Belum ada data yang diinput.</td></tr>`;
-                        return;
-                    }
-
-                    let html = "";
-                    result.data.forEach(row => {
-                        html += `
-                            <tr>
-                                <td><span class="badge-time">${row.timestamp}</span></td>
-                                <td><strong>${row.operator}</strong></td>
-                                <td>${row.nama}</td>
-                                <td>${row.nik}</td>
-                                <td>${row.telp || '-'}</td>
-                                <td>${row.provinsi} / ${row.kabKota}</td>
-                            </tr>
-                        `;
-                    });
-                    tbody.innerHTML = html;
+                    allRiwayatData = result.data;
+                    filteredData = [...allRiwayatData]; // Copy data ke filter
+                    currentPage = 1; // Reset ke halaman 1
+                    renderTable();
                 } else {
                     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red">Gagal memuat: ${result.message}</td></tr>`;
                 }
             } catch (e) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red">Gagal koneksi ke server.</td></tr>`;
             }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("riwayat-body");
+            
+            if(filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Tidak ada data ditemukan.</td></tr>`;
+                updatePaginationUI();
+                return;
+            }
+
+            // Hitung index awal dan akhir untuk halaman ini
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+
+            let html = "";
+            pageData.forEach(row => {
+                html += `
+                    <tr>
+                        <td><span class="badge-time">${row.timestamp}</span></td>
+                        <td><strong>${row.operator}</strong></td>
+                        <td>${row.nama}</td>
+                        <td>${row.nik}</td>
+                        <td>${row.telp || '-'}</td>
+                        <td>${row.provinsi} / ${row.kabKota}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            updatePaginationUI();
+        }
+
+        function updatePaginationUI() {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+            const pageInfo = document.getElementById("page-info");
+            const btnPrev = document.getElementById("btn-prev");
+            const btnNext = document.getElementById("btn-next");
+            const pageNumbers = document.getElementById("page-numbers");
+
+            // Update Info Teks
+            const start = filteredData.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+            const end = Math.min(currentPage * rowsPerPage, filteredData.length);
+            pageInfo.innerText = `Menampilkan ${start} - ${end} dari ${filteredData.length} data`;
+
+            // Update Tombol Prev/Next
+            btnPrev.disabled = currentPage === 1;
+            btnNext.disabled = currentPage === totalPages;
+
+            // Generate Nomor Halaman (Maksimal tampil 5 kotak)
+            let numHtml = "";
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    numHtml += `<button class="btn-page ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    numHtml += `<span class="page-dots">...</span>`;
+                }
+            }
+            pageNumbers.innerHTML = numHtml;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+            currentPage += direction;
+            if(currentPage < 1) currentPage = 1;
+            if(currentPage > totalPages) currentPage = totalPages;
+            renderTable();
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderTable();
+        }
+
+        function filterRiwayat() {
+            const keyword = document.getElementById("search-riwayat").value.toLowerCase();
+            
+            // Filter berdasarkan Nama, NIK, atau Operator
+            filteredData = allRiwayatData.filter(row => 
+                (row.nama && row.nama.toLowerCase().includes(keyword)) || 
+                (row.nik && row.nik.toString().includes(keyword)) ||
+                (row.operator && row.operator.toLowerCase().includes(keyword))
+            );
+            
+            currentPage = 1; // Reset ke halaman 1 setiap kali mencari
+            renderTable();
         }
     </script>
 </body>
