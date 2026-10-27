@@ -111,6 +111,7 @@
             </div>
 
             <!-- KONTEN: RIWAYAT -->
+            <!-- KONTEN: RIWAYAT -->
             <div id="content-riwayat" class="tab-content hidden">
                 <div class="page-header flex-between">
                     <div>
@@ -118,6 +119,11 @@
                         <p>Daftar peserta yang sudah berhasil diinput ke dalam sistem.</p>
                     </div>
                     <button onclick="loadRiwayat()" class="btn-outline">🔄 Refresh Data</button>
+                </div>
+
+                <!-- Toolbar Pencarian -->
+                <div class="toolbar-riwayat">
+                    <input type="text" id="search-riwayat" placeholder="🔍 Cari nama peserta atau NIK..." onkeyup="filterRiwayat()">
                 </div>
 
                 <div class="card">
@@ -138,9 +144,18 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <!-- Kontrol Pagination -->
+                    <div class="pagination-container">
+                        <div class="page-info" id="page-info">Menampilkan 0 dari 0 data</div>
+                        <div class="page-buttons">
+                            <button id="btn-prev" onclick="changePage(-1)" class="btn-page" disabled>« Sebelumnya</button>
+                            <span id="page-numbers"></span>
+                            <button id="btn-next" onclick="changePage(1)" class="btn-page" disabled>Selanjutnya »</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </main>
     </div>
 
